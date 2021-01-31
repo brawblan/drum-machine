@@ -30,29 +30,4 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 3px inset rgb(120, 120, 120);
-  width: 100px;
-  height: 100px;
-  background-color: #000;
-  color: #fff;
-}
-.drum-pad:hover {
-  background-color: rgb(67, 67, 67);
-}
-.drum-pad:active {
-  background-color: #fff;
-  color: #000;
-  border: 3px outset rgb(120, 120, 120);
-  position: relative;
-  top: 2px;
-  right: 2px;
-}
-
-.clicked {
-  background-color: #fff;
-  color: #000;
-  border: 3px outset rgb(120, 120, 120);
-  position: relative;
-  top: 2px;
-  right: 2px;
 }
