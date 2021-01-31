@@ -47,3 +47,12 @@ body {
   top: 2px;
   right: 2px;
 }
+
+.clicked {
+  background-color: #fff;
+  color: #000;
+  border: 3px outset rgb(120, 120, 120);
+  position: relative;
+  top: 2px;
+  right: 2px;
+}

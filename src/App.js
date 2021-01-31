@@ -14,17 +14,15 @@ const drumpadKeys = [
   {key: 'C', source: "src", keycode: 67},
 ]
 
-const handlePress = (e) => {
-  console.log(e.keycode);
-}
-
 const DrumPad = () => {
+
   const drumpadKeyContainers = drumpadKeys.map((item) =>
     <div 
       className="drum-pad" 
       key={item.key} 
       keycode={item.keycode}
-      onKeyDown={(e) => handlePress(e)}
+      onKeyDown={() => (console.log(KeyboardEvent.code))} 
+      tabIndex={0}
     >
       <audio 
         className="clip" 
