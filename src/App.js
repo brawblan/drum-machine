@@ -35,15 +35,12 @@ const clicked = {
 
 const DrumPad = () => {
 
-  const [isClicked, setIsClicked] = useState(clicked);
+  const [isClicked, setIsClicked] = useState(true);
 
   const keyPress = (e) => {
     drumpadKeys.forEach(item => {
-      if (String.fromCharCode(e.keyCode) === item.key) {
-        console.log(item.key === String.fromCharCode(e.keyCode))
-        setIsClicked(clicked)
-      } else {
-        setIsClicked(notClicked)
+      if (e.target.getAttribute('keycode') == item.key.charCodeAt(0)) {
+        item.style = setIsClicked(!isClicked)
       }
     })
   }
