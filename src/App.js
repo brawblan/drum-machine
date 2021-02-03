@@ -1,91 +1,96 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
+import useSound from 'use-sound';
+import { KeyboardArrowUp } from '@material-ui/icons';
 
-const drumpadKeys = [
-  {key: 'Q', source: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3', keycode: 81},
-  {key: 'W', source: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3', keycode: 87},
-  {key: 'E', source: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3', keycode: 69},
-  {key: 'A', source: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3', keycode: 65},
-  {key: 'S', source: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3', keycode: 83},
-  {key: 'D', source: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3', keycode: 68},
-  {key: 'Z', source: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3', keycode: 90},
-  {key: 'X', source: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3', keycode: 88},
-  {key: 'C', source: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3', keycode: 67},
+const drumpadData = [
+  {id: 'cymbal', letter: 'Q', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-4_1.mp3', keycode: 81},
+  {id: 'snare', letter: 'W', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 87},
+  {id: 'hihat', letter: 'E', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 69},
+  {id: 'bass', letter: 'A', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 65},
+  {id: 'tom1', letter: 'S', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 83},
+  {id: 'tom2', letter: 'D', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 68},
+  {id: 'tom3', letter: 'Z', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 90},
+  {id: 'ride', letter: 'X', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 88},
+  {id: 'crash', letter: 'C', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 67},
 ]
 
-const notClicked = {
-  border: '3px inset rgb(120, 120, 120)',
-  width: '100px',
-  height: '100px',
-  backgroundColor: '#000',
-  color: '#fff',
-}
+// const notClicked = {
+//   border: '3px inset rgb(120, 120, 120)',
+//   width: '100px',
+//   height: '100px',
+//   backgroundColor: '#000',
+//   color: '#fff',
+// }
 
-const clicked = {
-  backgroundColor: '#ffffff',
-  color: '#000000',
-  border: '3px outset rgb(120, 120, 120)',
-  width: '100px',
-  height: '100px',
-  position: 'relative',
-  top: '2px',
-  right: '2px'
-};
+// const clicked = {
+//   backgroundColor: '#ffffff',
+//   color: '#000000',
+//   border: '3px outset rgb(120, 120, 120)',
+//   width: '100px',
+//   height: '100px',
+//   position: 'relative',
+//   top: '2px',
+//   right: '2px'
+// };
 
-const DrumPad = () => {
-  const [isClicked, setIsClicked] = useState(true);
+const DrumPad = ({ id, letter, src, handleDisplay }) => {
+  // const [isClicked, setIsClicked] = useState(true);
+  const [play] = useSound(src);
 
-  const padClicked = (e) => {
-    drumpadKeys.forEach(item => {
-      if (e.keyCode === item.keycode) {
-        item.style = setIsClicked(!isClicked)
+  const handleKeyDown = useCallback((e) => {
+      const { key, keyCode } = e;
+      if ((key.toUpperCase()).charCodeAt() === keyCode) {
+        play();
       }
-    })
-  }
+    }, [],);
 
-  const keyUp = () => {
-    setIsClicked(!isClicked)
-  }
-
-
-  const playSound = (key) => {
-    const sound = document.getElementById(`${key}`);
-    sound.currentTime = 0;
-    sound.play();
-    padClicked();
-    setTimeout(() => padClicked(), 100)
-  }
+    useEffect(() => {
+      window.addEventListener('keydown', handleKeyDown)
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown) 
+      }
+    }, [handleKeyDown])
   
-  const drumpadKeyContainers = drumpadKeys.map((item, index) =>
-
+  return (
     <div 
-      className="drum-pad"
-      id={item.key}
-      style={isClicked ? notClicked : clicked}
-      onKeyDown={playSound(item.key)}
-      onKeyUp={keyUp}
-      key={item.key} 
-      keycode={item.keycode}
-      tabIndex={index}
+      className='drum-pad'
+      id={id}
+      onClick={play}
+      onKeyDown={handleKeyDown}
     >
+      <h1>{letter}</h1>
       <audio 
-        className="clip" 
-        // id={item.key} 
-        src={item.source} 
-      />
-      {item.key}
+        className='clip'
+        src={src}
+        id={letter}
+      ></audio>
     </div>
   )
-  return (
-    <div id="drumpadKeyContainer">{drumpadKeyContainers}</div>
-  )
-}
+} 
 
 function App() {
+  const [display, setDisplay] = useState('');
+
+  const handleDisplay = (id) => {
+    setDisplay(id)
+  }
+
   return (
     <div id="drum-machine">
+      <h1>{display}</h1>
       <div id="display">
-        <DrumPad />
+        <div className="drum-pads">
+          {drumpadData.map((d) => (
+            <DrumPad
+              key={d.id}
+              id={d.id}
+              letter={d.letter}
+              src={d.src}
+              handleDisplay={handleDisplay}
+            />
+          ))}
+        </div>
       </div>
     </div>
   ) 
