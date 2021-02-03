@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './App.css';
 import useSound from 'use-sound';
-import { KeyboardArrowUp } from '@material-ui/icons';
 
 const drumpadData = [
   {id: 'cymbal', letter: 'Q', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-4_1.mp3', keycode: 81},
@@ -38,26 +37,31 @@ const DrumPad = ({ id, letter, src, handleDisplay }) => {
   // const [isClicked, setIsClicked] = useState(true);
   const [play] = useSound(src);
 
-  const handleKeyDown = useCallback((e) => {
-      const { key, keyCode } = e;
-      if ((key.toUpperCase()).charCodeAt() === keyCode) {
-        play();
-      }
-    }, [],);
+  function useKey(key, callback) {
+    const callbackRef = useRef(callback);
 
     useEffect(() => {
-      window.addEventListener('keydown', handleKeyDown)
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown) 
+      callbackRef.current = callback;
+    });
+
+    useEffect(() => {
+      function handle(e) {
+        if (e.code === key) {
+          callbackRef.current(e);
+          play();
+        }
       }
-    }, [handleKeyDown])
+      document.addEventListener('keypress', handle);
+      return () => document.removeEventListener('keypress', handle)
+    });
+  }
   
   return (
     <div 
       className='drum-pad'
       id={id}
       onClick={play}
-      onKeyDown={handleKeyDown}
+      onKeyDown={useKey}
     >
       <h1>{letter}</h1>
       <audio 
