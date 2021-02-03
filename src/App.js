@@ -48,14 +48,18 @@ const DrumPad = ({ id, letter, src, handleDisplay }) => {
       function handle(e) {
         if (e.code === key) {
           callbackRef.current(e);
-          play();
         }
       }
-      document.addEventListener('keypress', handle);
-      return () => document.removeEventListener('keypress', handle)
+      document.addEventListener('keydown', handle);
+      return () => document.removeEventListener('keydown', handle)
     });
   }
-  
+
+  const handleKey = (e) => {
+    console.log(e.code)
+  }
+
+  useKey('KeyQ', handleKey)
   return (
     <div 
       className='drum-pad'
@@ -79,7 +83,6 @@ function App() {
   const handleDisplay = (id) => {
     setDisplay(id)
   }
-
   return (
     <div id="drum-machine">
       <h1>{display}</h1>
