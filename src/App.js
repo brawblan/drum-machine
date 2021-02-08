@@ -21,22 +21,24 @@ import useSound from 'use-sound';
 //   right: '2px'
 // };
 
-const DrumPad = ({ pad }) => {
-  const { id, letter, src } = pad;
-  // const [isClicked, setIsClicked] = useState(true);
+const DrumPad = ({ pad, onKeyPress }) => {
+  const { id, letter, src, keycode } = pad;
   const [play] = useSound(src);
 
-
-  const handleKey = (e) => {
-    console.log(e)
+  const onKeyPressed = (e) => {
+    if (e.keyCode === keycode) {
+      play();
+    }
   }
 
   return (
     <div 
       className='drum-pad'
       id={id}
+      keycode={letter}
       onClick={play}
-      onKeyDown={handleKey}
+      onKeyDown={onKeyPressed}
+      tabIndex={0}
     >
       <h1>{letter}</h1>
       <audio 
@@ -63,8 +65,10 @@ function App() {
   
   const [display, setDisplay] = useState('');
 
-  const handleDisplay = (id) => {
-    setDisplay(id)
+  const handleDisplay = () => {}
+
+  const handleKeyPress = (data) => {
+    console.log(data);
   }
 
   return (
@@ -75,9 +79,10 @@ function App() {
           {drumpadData.map((d) => (
             <DrumPad
               key={d.id}
-              pad={drumpadData}
+              pad={d}
               selected={d.id === setDisplay.id}
               handleDisplay={handleDisplay}
+              onKeyPress={handleKeyPress}
             />
           ))}
         </div>
