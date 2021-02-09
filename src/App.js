@@ -20,26 +20,29 @@ const clicked = {
   right: '2px'
 };
 
-const DrumPad = ({ pad }) => {
-  const { letter, src, keycode } = pad;
-  const [isClicked, setIsClicked] = useState(notClicked)
+const DrumPad = ({ pad, onClick }) => {
+  const { id, letter, src, keycode } = pad;
+  const [isClicked, setIsClicked] = useState(notClicked);
   const [play] = useSound(src);
 
   const onKeyPressed = (e) => {
     if (e.keyCode === keycode) {
       play();
-      setIsClicked(clicked)
+      setIsClicked(clicked);
+      handleKey();
     }
   }
 
   const onKeyUped = () => {
-    setIsClicked(notClicked)
+    setIsClicked(notClicked);
   }
 
   useEffect(() => {
     window.addEventListener('keydown', onKeyPressed);
     window.addEventListener('keyup', onKeyUped);
   }, [])
+
+  const handleKey = () => onClick(id);
 
   return (
     <div 
@@ -49,26 +52,15 @@ const DrumPad = ({ pad }) => {
       keycode={letter}
       onClick={play}
     >
-      <h1>{letter}</h1>
       <audio 
         className="clip"
         src={src}
         id={letter}
       ></audio>
+      <h1>{letter}</h1>
     </div>
   )
 } 
-
-const HeaderDisplay = () => {
-  const [displayId, setDisplayId] = useState('');
-
-  const changeDisplay = (data) => {
-    setDisplayId(data)
-  }
-  return (
-    <h1 display={changeDisplay}>{displayId}</h1>
-  )
-}
 
 function App() {
   const drumpadData = [
@@ -83,15 +75,23 @@ function App() {
     {id: 'crash', letter: 'C', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 67},
   ]
 
+  const [displayId, setDisplayId] = useState("");
+
+  const changeDisplay = (id) => {
+    setDisplayId(id)
+  }
+
   return (
     <div id="drum-machine">
-      <HeaderDisplay />
+      <h1>{displayId}</h1>
       <div id="display">
         <div className="drum-pads">
-          {drumpadData.map((d) => (
+          {drumpadData.map((d, i) => (
             <DrumPad
               key={d.id}
               pad={d}
+              index={i}
+              onClick={changeDisplay}
             />
           ))}
         </div>
