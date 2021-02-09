@@ -1,54 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import useSound from 'use-sound';
 
-// const notClicked = {
-//   border: '3px inset rgb(120, 120, 120)',
-//   width: '100px',
-//   height: '100px',
-//   backgroundColor: '#000',
-//   color: '#fff',
-// }
+const notClicked = {
+  border: '3px inset rgb(120, 120, 120)',
+  width: '100px',
+  height: '100px',
+  backgroundColor: '#000',
+  color: '#fff',
+}
+const clicked = {
+  backgroundColor: '#ffffff',
+  color: '#000000',
+  border: '3px outset rgb(120, 120, 120)',
+  width: '100px',
+  height: '100px',
+  position: 'relative',
+  top: '2px',
+  right: '2px'
+};
 
-// const clicked = {
-//   backgroundColor: '#ffffff',
-//   color: '#000000',
-//   border: '3px outset rgb(120, 120, 120)',
-//   width: '100px',
-//   height: '100px',
-//   position: 'relative',
-//   top: '2px',
-//   right: '2px'
-// };
-
-const DrumPad = ({ pad, onKeyPress }) => {
-  const { id, letter, src, keycode } = pad;
+const DrumPad = ({ pad }) => {
+  const { letter, src, keycode } = pad;
+  const [isClicked, setIsClicked] = useState(notClicked)
   const [play] = useSound(src);
 
   const onKeyPressed = (e) => {
     if (e.keyCode === keycode) {
       play();
+      setIsClicked(clicked)
     }
   }
 
+  const onKeyUped = () => {
+    setIsClicked(notClicked)
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', onKeyPressed);
+    window.addEventListener('keyup', onKeyUped);
+  }, [])
+
   return (
     <div 
-      className='drum-pad'
-      id={id}
+      className="drum-pad"
+      style={isClicked}
+      id={letter}
       keycode={letter}
       onClick={play}
-      onKeyDown={onKeyPressed}
-      tabIndex={0}
     >
       <h1>{letter}</h1>
       <audio 
-        className='clip'
+        className="clip"
         src={src}
         id={letter}
       ></audio>
     </div>
   )
 } 
+
+const HeaderDisplay = () => {
+  const [displayId, setDisplayId] = useState('');
+
+  const changeDisplay = (data) => {
+    setDisplayId(data)
+  }
+  return (
+    <h1 display={changeDisplay}>{displayId}</h1>
+  )
+}
 
 function App() {
   const drumpadData = [
@@ -62,27 +82,16 @@ function App() {
     {id: 'ride', letter: 'X', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 88},
     {id: 'crash', letter: 'C', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 67},
   ]
-  
-  const [display, setDisplay] = useState('');
-
-  const handleDisplay = () => {}
-
-  const handleKeyPress = (data) => {
-    console.log(data);
-  }
 
   return (
     <div id="drum-machine">
-      <h1>{display}</h1>
+      <HeaderDisplay />
       <div id="display">
         <div className="drum-pads">
           {drumpadData.map((d) => (
             <DrumPad
               key={d.id}
               pad={d}
-              selected={d.id === setDisplay.id}
-              handleDisplay={handleDisplay}
-              onKeyPress={handleKeyPress}
             />
           ))}
         </div>
