@@ -20,7 +20,7 @@ const clicked = {
   right: '2px'
 };
 
-const DrumPad = ({ pad, onClick }) => {
+const DrumPad = ({ pad, drums, onClick }) => {
   const { id, letter, src, keycode } = pad;
   const [isClicked, setIsClicked] = useState(notClicked);
   const [play] = useSound(src);
@@ -38,9 +38,22 @@ const DrumPad = ({ pad, onClick }) => {
   }
 
   useEffect(() => {
-    window.addEventListener('keydown', onKeyPressed);
-    window.addEventListener('keyup', onKeyUped);
-  }, [])
+    document.addEventListener('keydown', onKeyPressed);
+    document.addEventListener('keyup', onKeyUped);
+    return () => {
+      document.removeEventListener('keydown', onKeyPressed);
+      document.removeEventListener('keyup', onKeyUped);
+    }
+  })
+
+  const handleClick = () => {
+    play();
+    setIsClicked(clicked);
+    onClick(id)
+    setTimeout(() => {
+      setIsClicked(notClicked)
+    }, 100);
+  }
 
   const handleKey = () => onClick(id);
 
@@ -50,7 +63,7 @@ const DrumPad = ({ pad, onClick }) => {
       style={isClicked}
       id={letter}
       keycode={letter}
-      onClick={play}
+      onClick={handleClick}
     >
       <audio 
         className="clip"
@@ -64,18 +77,18 @@ const DrumPad = ({ pad, onClick }) => {
 
 function App() {
   const drumpadData = [
-    {id: 'cymbal', letter: 'Q', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-4_1.mp3', keycode: 81},
-    {id: 'snare', letter: 'W', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 87},
-    {id: 'hihat', letter: 'E', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 69},
-    {id: 'bass', letter: 'A', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 65},
+    {id: 'cymbal', letter: 'Q', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3', keycode: 81},
+    {id: 'snare', letter: 'W', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-2.mp3', keycode: 87},
+    {id: 'hihat', letter: 'E', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-3.mp3', keycode: 69},
+    {id: 'bass', letter: 'A', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-4_1.mp3', keycode: 65},
     {id: 'tom1', letter: 'S', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 83},
-    {id: 'tom2', letter: 'D', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 68},
-    {id: 'tom3', letter: 'Z', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 90},
-    {id: 'ride', letter: 'X', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 88},
-    {id: 'crash', letter: 'C', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3', keycode: 67},
+    {id: 'tom2', letter: 'D', src: 'https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3', keycode: 68},
+    {id: 'tom3', letter: 'Z', src: 'https://s3.amazonaws.com/freecodecamp/drums/Kick_n_Hat.mp3', keycode: 90},
+    {id: 'ride', letter: 'X', src: 'https://s3.amazonaws.com/freecodecamp/drums/RP4_KICK_1.mp3', keycode: 88},
+    {id: 'crash', letter: 'C', src: 'https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3', keycode: 67},
   ]
 
-  const [displayId, setDisplayId] = useState("");
+  const [displayId, setDisplayId] = useState(" ");
 
   const changeDisplay = (id) => {
     setDisplayId(id)
@@ -90,6 +103,7 @@ function App() {
             <DrumPad
               key={d.id}
               pad={d}
+              drums={d}
               index={i}
               onClick={changeDisplay}
             />
